@@ -1,0 +1,7 @@
+/* App.css */
+@import '~bulma/css/bulma.css';
+@import '~font-awesome/css/font-awesome.css';
+.app-logo {
+    margin-top: 20px; /* Регулируйте отступ в пикселях по вашему усмотрению */
+  }
+  
