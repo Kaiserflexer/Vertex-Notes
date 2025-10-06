@@ -29,72 +29,81 @@ const EditNoteModal = ({ editedNote, onSave, onClose, folders = [] }) => {
   };
 
   return (
-    <div className="modal is-active">
-      <div className="modal-background" onClick={onClose}></div>
-      <div className="modal-card">
-        <header className="modal-card-head">
-          <p className="modal-card-title">Редактировать Записку</p>
-          <button className="delete" onClick={onClose}></button>
-        </header>
-        <section className="modal-card-body">
-          <div className="field">
-            <label className="label">Заголовок</label>
-            <div className="control">
-              <input
-                className="input"
-                type="text"
-                value={editedTitle}
-                onChange={(e) => setEditedTitle(e.target.value)}
-              />
-            </div>
+    <div className="modal-overlay" role="dialog" aria-modal="true">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h3 className="modal-title">Редактировать заметку</h3>
+          <button className="close-button" onClick={onClose} aria-label="Закрыть окно">
+            <i className="fas fa-times"></i>
+          </button>
+        </div>
+
+        <div className="modal-body">
+          <div className="form-field">
+            <label className="field-label" htmlFor="edit-note-title">
+              Заголовок
+            </label>
+            <input
+              id="edit-note-title"
+              className="modern-input"
+              type="text"
+              value={editedTitle}
+              onChange={(e) => setEditedTitle(e.target.value)}
+            />
           </div>
-          <div className="field">
-            <label className="label">Описание</label>
-            <div className="control">
-              <textarea
-                className="textarea"
-                value={editedDescription}
-                onChange={(e) => setEditedDescription(e.target.value)}
-              />
-            </div>
+
+          <div className="form-field">
+            <label className="field-label" htmlFor="edit-note-description">
+              Описание
+            </label>
+            <textarea
+              id="edit-note-description"
+              className="modern-input"
+              rows="4"
+              value={editedDescription}
+              onChange={(e) => setEditedDescription(e.target.value)}
+            />
           </div>
-          <div className="field">
-            <label className="label">Папка</label>
-            <div className="control">
-              <div className="select is-fullwidth">
-                <select
-                  value={folderId}
-                  onChange={(event) => setFolderId(event.target.value)}
-                >
-                  <option value="">Без папки</option>
-                  {folders.map((folder) => (
-                    <option key={folder.id} value={folder.id}>
-                      {folder.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+
+          <div className="form-field">
+            <label className="field-label" htmlFor="edit-note-folder">
+              Папка
+            </label>
+            <select
+              id="edit-note-folder"
+              className="modern-select"
+              value={folderId}
+              onChange={(event) => setFolderId(event.target.value)}
+            >
+              <option value="">Без папки</option>
+              {folders.map((folder) => (
+                <option key={folder.id} value={folder.id}>
+                  {folder.name}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="field">
-            <label className="label">Метки</label>
-            <div className="control">
-              <TagsInput
-                value={tags}
-                onChange={(newTags) => setTags(newTags)}
-                inputProps={{ placeholder: 'Добавьте метку' }}
-              />
-            </div>
+
+          <div className="form-field">
+            <label className="field-label">Метки</label>
+            <TagsInput
+              value={tags}
+              onChange={(newTags) => setTags(newTags)}
+              className="modern-tagsinput"
+              inputProps={{ placeholder: 'Добавьте метку' }}
+            />
           </div>
-        </section>
-        <footer className="modal-card-foot">
-          <button className="button is-success" onClick={handleSave}>
+        </div>
+
+        <div className="modal-actions">
+          <button className="modern-button" onClick={handleSave}>
+            <i className="fas fa-save"></i>
             Сохранить изменения
           </button>
-          <button className="button" onClick={onClose}>
+          <button className="modern-button secondary" onClick={onClose}>
             Отмена
           </button>
-        </footer>
+        </div>
       </div>
     </div>
   );

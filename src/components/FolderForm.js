@@ -14,22 +14,19 @@ const FolderForm = ({ addFolder }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-4">
-      <div className="field has-addons">
-        <div className="control is-expanded">
-          <input
-            className="input"
-            type="text"
-            placeholder="Название новой папки"
-            value={folderName}
-            onChange={(event) => setFolderName(event.target.value)}
-          />
-        </div>
-        <div className="control">
-          <button type="submit" className="button is-link">
-            Добавить
-          </button>
-        </div>
+    <form onSubmit={handleSubmit} className="folder-form">
+      <div className="form-row">
+        <input
+          className="modern-input"
+          type="text"
+          placeholder="Название новой папки"
+          value={folderName}
+          onChange={(event) => setFolderName(event.target.value)}
+        />
+        <button type="submit" className="modern-button">
+          <i className="fas fa-plus"></i>
+          Добавить
+        </button>
       </div>
     </form>
   );

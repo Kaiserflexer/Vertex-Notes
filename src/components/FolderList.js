@@ -31,109 +31,98 @@ const FolderList = ({
   };
 
   return (
-    <div className="box">
-      <h2 className="title is-5">Папки</h2>
+    <div className="gradient-surface panel-card">
+      <div className="panel-heading">
+        <div>
+          <h2 className="panel-title">Папки</h2>
+          <p className="panel-description">
+            Быстро переключайтесь между коллекциями заметок и управляйте структурой.
+          </p>
+        </div>
+      </div>
+
       <FolderForm addFolder={onAddFolder} />
-      <div className="menu">
-        <ul className="menu-list">
-          <li>
-            <button
-              type="button"
-              className={`button is-ghost is-fullwidth has-text-left ${
-                selectedFolderId === null ? 'is-link' : ''
-              }`}
-              onClick={() => onSelectFolder(null)}
-            >
-              <span className="icon-text">
-                <span className="icon">
-                  <i className="fas fa-inbox"></i>
-                </span>
-                <span>Все заметки</span>
-              </span>
-            </button>
-          </li>
-          {folders.map((folder) => (
-            <li key={folder.id} className="mt-2">
-              {folderBeingEdited === folder.id ? (
-                <div className="field has-addons">
-                  <div className="control is-expanded">
-                    <input
-                      className="input"
-                      type="text"
-                      value={editedName}
-                      onChange={(event) => setEditedName(event.target.value)}
-                      onKeyDown={(event) => {
-                        if (event.key === 'Enter') {
-                          event.preventDefault();
-                          saveEditing();
-                        }
-                        if (event.key === 'Escape') {
-                          event.preventDefault();
-                          cancelEditing();
-                        }
-                      }}
-                    />
-                  </div>
-                  <div className="control">
-                    <button
-                      type="button"
-                      className="button is-success"
-                      onClick={saveEditing}
-                    >
-                      <i className="fas fa-check"></i>
-                    </button>
-                  </div>
-                  <div className="control">
-                    <button
-                      type="button"
-                      className="button"
-                      onClick={cancelEditing}
-                    >
-                      <i className="fas fa-times"></i>
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="folder-item">
+
+      <div className="folder-list">
+        <div className={`folder-chip ${selectedFolderId === null ? 'active' : ''}`}>
+          <button
+            type="button"
+            className="folder-chip__label-button"
+            onClick={() => onSelectFolder(null)}
+          >
+            <span className="folder-chip__label">
+              <i className="fas fa-inbox"></i>
+              Все заметки
+            </span>
+          </button>
+        </div>
+
+        {folders.map((folder) => (
+          <div key={folder.id}>
+            {folderBeingEdited === folder.id ? (
+              <div className="folder-edit-row">
+                <input
+                  className="modern-input"
+                  type="text"
+                  value={editedName}
+                  onChange={(event) => setEditedName(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter') {
+                      event.preventDefault();
+                      saveEditing();
+                    }
+                    if (event.key === 'Escape') {
+                      event.preventDefault();
+                      cancelEditing();
+                    }
+                  }}
+                />
+                <button type="button" className="modern-button" onClick={saveEditing}>
+                  <i className="fas fa-check"></i>
+                  Сохранить
+                </button>
+                <button
+                  type="button"
+                  className="modern-button secondary"
+                  onClick={cancelEditing}
+                >
+                  Отмена
+                </button>
+              </div>
+            ) : (
+              <div className={`folder-chip ${selectedFolderId === folder.id ? 'active' : ''}`}>
+                <button
+                  type="button"
+                  className="folder-chip__label-button"
+                  onClick={() => onSelectFolder(folder.id)}
+                >
+                  <span className="folder-chip__label">
+                    <i className="fas fa-folder"></i>
+                    {folder.name}
+                  </span>
+                </button>
+                <div className="folder-chip__actions">
                   <button
                     type="button"
-                    className={`button is-ghost is-fullwidth has-text-left ${
-                      selectedFolderId === folder.id ? 'is-link' : ''
-                    }`}
-                    onClick={() => onSelectFolder(folder.id)}
+                    className="icon-button"
+                    onClick={() => startEditing(folder)}
+                    aria-label="Редактировать папку"
                   >
-                    <span className="icon-text">
-                      <span className="icon">
-                        <i className="fas fa-folder"></i>
-                      </span>
-                      <span>{folder.name}</span>
-                    </span>
+                    <i className="fas fa-edit"></i>
                   </button>
-                  <div className="buttons is-right mt-2">
-                    <button
-                      type="button"
-                      className="button is-warning is-small"
-                      onClick={() => startEditing(folder)}
-                    >
-                      <span className="icon is-small">
-                        <i className="fas fa-edit"></i>
-                      </span>
-                    </button>
-                    <button
-                      type="button"
-                      className="button is-danger is-small"
-                      onClick={() => onDeleteFolder(folder.id)}
-                    >
-                      <span className="icon is-small">
-                        <i className="fas fa-trash"></i>
-                      </span>
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    onClick={() => onDeleteFolder(folder.id)}
+                    aria-label="Удалить папку"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
                 </div>
-              )}
-            </li>
-          ))}
-        </ul>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );
