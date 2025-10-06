@@ -22,78 +22,97 @@ const NoteList = ({
   }, [folders]);
 
   if (filteredNotes.length === 0) {
-    return <p className="has-text-grey">Заметок пока нет.</p>;
+    return (
+      <div className="empty-state">
+        <i className="fas fa-pen-to-square" style={{ fontSize: '2rem', marginBottom: '12px' }}></i>
+        <p>Заметок пока нет. Создайте первую, чтобы начать!</p>
+      </div>
+    );
   }
 
   return (
-    <div>
+    <div className="note-list">
       {filteredNotes.map((note) => {
         const noteFolderName = note.folderId
           ? folderNames.get(note.folderId)
           : null;
 
         return (
-          <div key={note.id} className="card mb-3">
-            <div className="card-content">
-              <p className="title">{note.title}</p>
-              <p className="subtitle">
-                {new Date(note.createdAt).toLocaleString()}
+          <article key={note.id} className="note-card">
+            <div className="note-card__header">
+              <h3 className="note-card__title">{note.title}</h3>
+              <div className="note-card__meta">
+                <span>
+                  <i className="fas fa-clock"></i>{' '}
+                  Создано: {new Date(note.createdAt).toLocaleString()}
+                </span>
                 {note.updatedAt && (
-                  <span className="ml-2 has-text-grey">
-                    (изменено {new Date(note.updatedAt).toLocaleString()})
+                  <span>
+                    <i className="fas fa-rotate"></i>{' '}
+                    Обновлено: {new Date(note.updatedAt).toLocaleString()}
                   </span>
                 )}
-              </p>
-              <div className="content">{note.description}</div>
-              <div className="tags">
-                {note.tags && note.tags.length > 0 && (
-                  <span className="tag is-primary is-light">
-                    <i className="fas fa-tags"></i> Метки: {note.tags.join(', ')}
-                  </span>
-                )}
-              </div>
-              <div className="field mt-3">
-                <label className="label is-size-6">Папка</label>
-                <div className="control">
-                  <div className="select is-small">
-                    <select
-                      value={note.folderId || ''}
-                      onChange={(event) =>
-                        onMoveNoteToFolder(
-                          note.id,
-                          event.target.value || null
-                        )
-                      }
-                    >
-                      <option value="">Без папки</option>
-                      {folders.map((folder) => (
-                        <option key={folder.id} value={folder.id}>
-                          {folder.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  {noteFolderName && (
-                    <p className="help">Текущая папка: {noteFolderName}</p>
-                  )}
-                </div>
               </div>
             </div>
-            <footer className="card-footer">
+
+            <div className="note-card__description">{note.description}</div>
+
+            {note.tags && note.tags.length > 0 && (
+              <div className="note-card__tags">
+                {note.tags.map((tag) => (
+                  <span key={tag} className="note-card__tag">
+                    <i className="fas fa-hashtag"></i>
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            <div className="note-card__folder">
+              <label className="field-label" htmlFor={`note-folder-${note.id}`}>
+                Папка
+              </label>
+              <select
+                id={`note-folder-${note.id}`}
+                className="modern-select note-card__folder-select"
+                value={note.folderId || ''}
+                onChange={(event) =>
+                  onMoveNoteToFolder(note.id, event.target.value || null)
+                }
+              >
+                <option value="">Без папки</option>
+                {folders.map((folder) => (
+                  <option key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </option>
+                ))}
+              </select>
+              {noteFolderName && (
+                <span className="panel-description">
+                  Текущая папка: {noteFolderName}
+                </span>
+              )}
+            </div>
+
+            <div className="note-card__actions">
               <button
-                className="button is-warning card-footer-item"
+                type="button"
+                className="modern-button secondary"
                 onClick={() => onEdit(note)}
               >
-                <i className="fas fa-edit"></i> Редактировать
+                <i className="fas fa-pen"></i>
+                Редактировать
               </button>
               <button
-                className="button is-danger card-footer-item"
+                type="button"
+                className="modern-button danger"
                 onClick={() => onDelete(note.id)}
               >
-                <i className="fas fa-trash"></i> Удалить
+                <i className="fas fa-trash"></i>
+                Удалить
               </button>
-            </footer>
-          </div>
+            </div>
+          </article>
         );
       })}
     </div>
