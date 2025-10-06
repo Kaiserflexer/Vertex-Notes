@@ -39,67 +39,66 @@ const NoteForm = ({ addNote, folders = [], defaultFolderId }) => {
   };
 
   return (
-    <form className="box" onSubmit={handleSubmit}>
-      <div className="field">
-        <label className="label">Заголовок</label>
-        <div className="control">
-          <input
-            className="input"
-            type="text"
-            placeholder="Заголовок"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
+    <form className="form-card" onSubmit={handleSubmit}>
+      <div className="form-field">
+        <label className="field-label" htmlFor="note-title">
+          Заголовок
+        </label>
+        <input
+          id="note-title"
+          className="modern-input"
+          type="text"
+          placeholder="Например, план на неделю"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+        />
       </div>
 
-      <div className="field">
-        <label className="label">Описание</label>
-        <div className="control">
-          <SimpleMDE
-            value={description}
-            onChange={(value) => setDescription(value)}
-            getMdeInstance={(simpleMde) => setEditor(simpleMde)}
-          />
-        </div>
+      <div className="form-field">
+        <label className="field-label">Описание</label>
+        <SimpleMDE
+          value={description}
+          onChange={(value) => setDescription(value)}
+          getMdeInstance={(simpleMde) => setEditor(simpleMde)}
+          options={{ placeholder: 'Добавьте подробности, ссылки или задачи…' }}
+        />
       </div>
 
-      <div className="field">
-        <label className="label">Папка</label>
-        <div className="control">
-          <div className="select is-fullwidth">
-            <select
-              value={folderId}
-              onChange={(event) => setFolderId(event.target.value)}
-            >
-              <option value="">Без папки</option>
-              {folders.map((folder) => (
-                <option key={folder.id} value={folder.id}>
-                  {folder.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+      <div className="form-field">
+        <label className="field-label" htmlFor="note-folder">
+          Папка
+        </label>
+        <select
+          id="note-folder"
+          className="modern-select"
+          value={folderId}
+          onChange={(event) => setFolderId(event.target.value)}
+        >
+          <option value="">Без папки</option>
+          {folders.map((folder) => (
+            <option key={folder.id} value={folder.id}>
+              {folder.name}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="field">
-        <label className="label">Метки</label>
-        <div className="control">
-          <TagsInput
-            value={tags}
-            onChange={(tags) => setTags(tags)}
-            addOnBlur={true}
-          />
-        </div>
+      <div className="form-field">
+        <label className="field-label">Метки</label>
+        <TagsInput
+          value={tags}
+          onChange={(tags) => setTags(tags)}
+          addOnBlur={true}
+          className="modern-tagsinput"
+          inputProps={{ placeholder: 'Нажмите Enter, чтобы добавить метку' }}
+        />
       </div>
 
-      <div className="field">
-        <div className="control">
-          <button className="button is-primary" type="submit">
-            Добавить
-          </button>
-        </div>
+      <div className="form-field">
+        <button className="modern-button" type="submit">
+          <i className="fas fa-plus-circle"></i>
+          Добавить заметку
+        </button>
       </div>
     </form>
   );

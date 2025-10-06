@@ -152,38 +152,54 @@ function App() {
 
   return (
     <div className="App">
-      <center>
-        <img className="app-logo" src="https://cdn-icons-png.flaticon.com/128/4165/4165911.png" alt="Логотип" />
-      </center>
-      <Container>
-        <Row>
-          <Col xs={12} md={3}>
-            <FolderList
-              folders={folders}
-              onAddFolder={addFolder}
-              onDeleteFolder={deleteFolder}
-              onEditFolder={editFolder}
-              selectedFolderId={selectedFolderId}
-              onSelectFolder={setSelectedFolderId}
+      <div className="app-inner">
+        <header className="app-header">
+          <div className="app-logo-wrapper">
+            <img
+              className="app-logo"
+              src="https://cdn-icons-png.flaticon.com/128/4165/4165911.png"
+              alt="Логотип"
             />
-          </Col>
-          <Col xs={12} md={9}>
-            <NoteForm
-              addNote={addNote}
-              folders={folders}
-              defaultFolderId={selectedFolderId}
-            />
-            <NoteList
-              notes={notes}
-              onDelete={deleteNote}
-              onEdit={(note) => setSelectedNote(note)}
-              folders={folders}
-              onMoveNoteToFolder={moveNoteToFolder}
-              selectedFolderId={selectedFolderId}
-            />
-          </Col>
-        </Row>
-      </Container>
+          </div>
+          <h1 className="app-title">Vertex Notes</h1>
+          <p className="app-subtitle">
+            Создавайте, структурируйте и редактируйте заметки в современном пространстве с
+            мягкими градиентами и упором на продуктивность.
+          </p>
+        </header>
+
+        <Container fluid="lg" className="app-container">
+          <Row className="app-grid">
+            <Col xs={12} lg={4}>
+              <FolderList
+                folders={folders}
+                onAddFolder={addFolder}
+                onDeleteFolder={deleteFolder}
+                onEditFolder={editFolder}
+                selectedFolderId={selectedFolderId}
+                onSelectFolder={setSelectedFolderId}
+              />
+            </Col>
+            <Col xs={12} lg={8}>
+              <div className="gradient-surface form-card">
+                <NoteForm
+                  addNote={addNote}
+                  folders={folders}
+                  defaultFolderId={selectedFolderId}
+                />
+              </div>
+              <NoteList
+                notes={notes}
+                onDelete={deleteNote}
+                onEdit={(note) => setSelectedNote(note)}
+                folders={folders}
+                onMoveNoteToFolder={moveNoteToFolder}
+                selectedFolderId={selectedFolderId}
+              />
+            </Col>
+          </Row>
+        </Container>
+      </div>
       {selectedNote && (
         <EditNoteModal
           editedNote={selectedNote}
@@ -192,7 +208,7 @@ function App() {
           folders={folders}
         />
       )}
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="bottom-right" theme="dark" />
     </div>
   );
 }
