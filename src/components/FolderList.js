@@ -32,6 +32,14 @@ const FolderList = ({
 
   return (
     <div className="gradient-surface panel-card">
+
+      <header className="panel-heading panel-heading--stacked">
+        <h2 className="panel-title">Папки</h2>
+        <p className="panel-description panel-description--contrast">
+          Быстро переключайтесь между коллекциями заметок и управляйте структурой.
+        </p>
+      </header>
+
       <div className="panel-heading">
         <div>
           <h2 className="panel-title">Папки</h2>
@@ -40,6 +48,7 @@ const FolderList = ({
           </p>
         </div>
       </div>
+
 
       <FolderForm addFolder={onAddFolder} />
 
