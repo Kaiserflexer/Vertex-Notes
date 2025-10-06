@@ -1,8 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
+test('отображает пустое состояние и список папок', () => {
   render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+
+  expect(screen.getByText('Папки')).toBeInTheDocument();
+  expect(screen.getByText('Все заметки')).toBeInTheDocument();
+  expect(screen.getByText('Заметок пока нет.')).toBeInTheDocument();
 });

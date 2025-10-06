@@ -14,65 +14,139 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [selectedNote, setSelectedNote] = useState(null);
   const [folders, setFolders] = useState([]);
-  const [selectedFolder, setSelectedFolder] = useState(null);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   useEffect(() => {
-    const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
-    setNotes(savedNotes);
+    try {
+      const savedNotes = JSON.parse(localStorage.getItem('notes') || '[]');
+      if (Array.isArray(savedNotes)) {
+        setNotes(savedNotes);
+      }
+    } catch (error) {
+      console.error('Не удалось загрузить заметки из LocalStorage', error);
+    }
   }, []);
 
   useEffect(() => {
     localStorage.setItem('notes', JSON.stringify(notes));
   }, [notes]);
 
-  const addNote = (newNote) => {
-    setNotes([...notes, newNote]);
+  useEffect(() => {
+    try {
+      const savedFolders = JSON.parse(localStorage.getItem('folders') || '[]');
+      if (Array.isArray(savedFolders)) {
+        setFolders(savedFolders);
+      }
+    } catch (error) {
+      console.error('Не удалось загрузить папки из LocalStorage', error);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('folders', JSON.stringify(folders));
+  }, [folders]);
+
+  const generateId = () => `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+  const addNote = (noteData) => {
+    const timestamp = new Date().toISOString();
+    const newNote = {
+      id: generateId(),
+      createdAt: timestamp,
+      updatedAt: null,
+      ...noteData,
+    };
+    setNotes((prevNotes) => [...prevNotes, newNote]);
     toast.success('Заметка успешно добавлена!', { position: 'bottom-right' });
   };
 
-  const deleteNote = (noteToDelete) => {
-    const updatedNotes = notes.filter((note) => note !== noteToDelete);
-    setNotes(updatedNotes);
+  const deleteNote = (noteId) => {
+    setNotes((prevNotes) => prevNotes.filter((note) => note.id !== noteId));
     toast.error('Заметка успешно удалена!', { position: 'bottom-right' });
   };
 
-  const editNote = (editedNote) => {
-    const updatedNotes = notes.map((note) =>
-      note === selectedNote ? editedNote : note
+  const editNote = (updatedNote) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === updatedNote.id
+          ? { ...note, ...updatedNote, updatedAt: new Date().toISOString() }
+          : note
+      )
     );
-    setNotes(updatedNotes);
     setSelectedNote(null);
     toast.success('Заметка успешно отредактирована!', { position: 'bottom-right' });
   };
 
-  const addFolder = (newFolder) => {
-    setFolders([...folders, newFolder]);
+  const addFolder = (folderName) => {
+    const trimmedName = folderName.trim();
+    if (!trimmedName) {
+      toast.warn('Название папки не может быть пустым', { position: 'bottom-right' });
+      return;
+    }
+
+    if (
+      folders.some(
+        (folder) => folder.name.toLowerCase() === trimmedName.toLowerCase()
+      )
+    ) {
+      toast.warn('Папка с таким названием уже существует', {
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    const newFolder = { id: generateId(), name: trimmedName };
+    setFolders((prevFolders) => [...prevFolders, newFolder]);
     toast.success('Папка успешно добавлена!', { position: 'bottom-right' });
   };
 
-  const deleteFolder = (folderToDelete) => {
-    const updatedFolders = folders.filter((folder) => folder !== folderToDelete);
-    setFolders(updatedFolders);
+  const deleteFolder = (folderId) => {
+    setFolders((prevFolders) => prevFolders.filter((folder) => folder.id !== folderId));
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.folderId === folderId ? { ...note, folderId: null } : note
+      )
+    );
+    if (selectedFolderId === folderId) {
+      setSelectedFolderId(null);
+    }
     toast.error('Папка успешно удалена!', { position: 'bottom-right' });
   };
 
-  const editFolder = (editedFolder) => {
-    const updatedFolders = folders.map((folder) =>
-      folder === selectedFolder ? editedFolder : folder
+  const editFolder = (folderId, newName) => {
+    const trimmedName = newName.trim();
+    if (!trimmedName) {
+      toast.warn('Название папки не может быть пустым', { position: 'bottom-right' });
+      return;
+    }
+
+    if (
+      folders.some(
+        (folder) =>
+          folder.id !== folderId &&
+          folder.name.toLowerCase() === trimmedName.toLowerCase()
+      )
+    ) {
+      toast.warn('Папка с таким названием уже существует', {
+        position: 'bottom-right',
+      });
+      return;
+    }
+
+    setFolders((prevFolders) =>
+      prevFolders.map((folder) =>
+        folder.id === folderId ? { ...folder, name: trimmedName } : folder
+      )
     );
-    setFolders(updatedFolders);
-    setSelectedFolder(null);
     toast.success('Папка успешно отредактирована!', { position: 'bottom-right' });
   };
 
-  const moveNoteToFolder = (noteToMove, targetFolder) => {
-    const updatedNotes = notes.map((note) => {
-      if (note === noteToMove) {
-        return { ...note, folderId: targetFolder.id };
-      }
-      return note;
-    });
-    setNotes(updatedNotes);
+  const moveNoteToFolder = (noteId, targetFolderId) => {
+    setNotes((prevNotes) =>
+      prevNotes.map((note) =>
+        note.id === noteId ? { ...note, folderId: targetFolderId } : note
+      )
+    );
     toast.info('Заметка перемещена в папку!', { position: 'bottom-right' });
   };
 
@@ -89,18 +163,23 @@ function App() {
               onAddFolder={addFolder}
               onDeleteFolder={deleteFolder}
               onEditFolder={editFolder}
-              onMoveNoteToFolder={moveNoteToFolder}
-              selectedFolder={selectedFolder}
-              setSelectedFolder={setSelectedFolder}
+              selectedFolderId={selectedFolderId}
+              onSelectFolder={setSelectedFolderId}
             />
           </Col>
           <Col xs={12} md={9}>
-            <NoteForm addNote={addNote} folders={folders} />
+            <NoteForm
+              addNote={addNote}
+              folders={folders}
+              defaultFolderId={selectedFolderId}
+            />
             <NoteList
               notes={notes}
               onDelete={deleteNote}
               onEdit={(note) => setSelectedNote(note)}
-              selectedFolder={selectedFolder}
+              folders={folders}
+              onMoveNoteToFolder={moveNoteToFolder}
+              selectedFolderId={selectedFolderId}
             />
           </Col>
         </Row>
@@ -110,6 +189,7 @@ function App() {
           editedNote={selectedNote}
           onSave={editNote}
           onClose={() => setSelectedNote(null)}
+          folders={folders}
         />
       )}
       <ToastContainer position="bottom-right" />
