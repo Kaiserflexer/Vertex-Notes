@@ -1,34 +1,45 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import SimpleMDE from 'react-simplemde-editor';
 import 'easymde/dist/easymde.min.css';
 import TagsInput from 'react-tagsinput';
 import 'react-tagsinput/react-tagsinput.css';
 
-const NoteForm = ({ addNote }) => {
+const NoteForm = ({ addNote, folders = [], defaultFolderId }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState([]);
   const [editor, setEditor] = useState(null);
+  const [folderId, setFolderId] = useState(defaultFolderId || '');
 
-  const handleSubmit = () => {
+  useEffect(() => {
+    setFolderId(defaultFolderId || '');
+  }, [defaultFolderId]);
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setTags([]);
+    setFolderId(defaultFolderId || '');
+    if (editor) {
+      editor.codemirror.setValue('');
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
     if (title.trim() !== '' && description.trim() !== '') {
       addNote({
-        title,
+        title: title.trim(),
         description,
-        createdAt: Date.now(),
         tags,
+        folderId: folderId || null,
       });
-      setTitle('');
-      setDescription('');
-      setTags([]);
-      if (editor) {
-        editor.codemirror.setValue(''); // Сброс редактора после отправки
-      }
+      resetForm();
     }
   };
 
   return (
-    <div className="box">
+    <form className="box" onSubmit={handleSubmit}>
       <div className="field">
         <label className="label">Заголовок</label>
         <div className="control">
@@ -54,6 +65,25 @@ const NoteForm = ({ addNote }) => {
       </div>
 
       <div className="field">
+        <label className="label">Папка</label>
+        <div className="control">
+          <div className="select is-fullwidth">
+            <select
+              value={folderId}
+              onChange={(event) => setFolderId(event.target.value)}
+            >
+              <option value="">Без папки</option>
+              {folders.map((folder) => (
+                <option key={folder.id} value={folder.id}>
+                  {folder.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div className="field">
         <label className="label">Метки</label>
         <div className="control">
           <TagsInput
@@ -66,12 +96,12 @@ const NoteForm = ({ addNote }) => {
 
       <div className="field">
         <div className="control">
-          <button className="button is-primary" onClick={handleSubmit}>
+          <button className="button is-primary" type="submit">
             Добавить
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
